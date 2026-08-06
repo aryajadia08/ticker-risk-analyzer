@@ -4,12 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 
 def data_pull():
-  starting = "2020-10-13"
-  ending = "2025-10-13"
   ticker = input("What ticker would you like to see?: ")
-  #start_date = input("What is your desired start date (YYYY-MM-DD)?: ")
-  #end_date = input("What is your desired end date (YYYY-MM-DD)?: ")
-  data = yf.download(ticker, start=starting, end=ending, progress = False, auto_adjust = True)
+  start_date = input("What is your desired start date (YYYY-MM-DD)?: ")
+  end_date = input("What is your desired end date (YYYY-MM-DD)?: ")
+  data = yf.download(ticker, start=start_date, end=end_date, progress = False, auto_adjust = True)
   close = data["Close"].squeeze()
   start_price = close.iloc[0]
   end_price = close.iloc[-1] 
@@ -24,11 +22,11 @@ def data_pull():
   max_drawdown = drawdown.min()*100
   downwards_returns = data_returns[data_returns<0]  
   data_downwards_sd = np.std(downwards_returns)
-  data_riskfree = yf.download("^IRX", start=starting, end=ending, progress = False, auto_adjust = True)
+  data_riskfree = yf.download("^IRX", start=start_date, end=end_date, progress = False, auto_adjust = True)
   closing = data_riskfree["Close"].squeeze()
   data_riskfree_mean = (np.mean(closing)/100)/252
   close.plot()
-  plt.title(ticker+" Closing Price ("+starting[:4]+"-"+ending[:4]+")")
+  plt.title(ticker+" Closing Price ("+start_date[:4]+"-"+end_date[:4]+")")
   plt.ylabel("Stock Value (USD)")
   plt.xlabel("Dates")
   plt.show()
