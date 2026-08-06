@@ -1,9 +1,9 @@
-# portfolio-risk-analyzer
+# ticker-risk-analyzer
 This program computes portfolio metrics like CAGR (Compounded Annual Growth Rate), Sharpe Ratio, Sortino Ratio, and Max Drawdown for a desired ticker over an desired interval.
-It ran well on Google Colab, so I primarily used that to run and test this program. However, I'm fairly sure it can run on any other Python interpreter.
+The program is on analyzer.py and it ran well on Google Colab, so I primarily used that to run and test this program. However, I'm fairly sure it can run on any other Python interpreter.
 
 **Background Information**
-For a bit of context, the Sharpe Ratio is the excess returns above the risk-free rate (treasury bills) per unit of total risk (considers large increases of value as a risk: a flaw of the Sharpe Ratio). The Sortino Ratio is similar to the Sharpe Ratio, but it only accounts for downward risk (stock values falling), which makes it more accurate than the Sharpe Ratio at times. The Compounded Annual Growth Rate is the projected average annual growth rate required to progress from the starting value to the ending value. Finally, Max Drawdown is the greatest peak-to-trough change in a stock's value. Sharpe/Sortino are expressed as decimals and annualized by multiplying by √252 (variance changes by time (252 is the number of days in a year where trades can be made) and standard deviation is the square root of variance, so standard deviation changes with the square root of time), while CAGR and Max Drawdown are expressed as percentages.
+For a bit of context, the Sharpe Ratio is the excess returns above the risk-free rate (treasury bills) per unit of total risk (considers large increases of value as a risk: a flaw of the Sharpe Ratio). The Sortino Ratio is similar to the Sharpe Ratio, but it only accounts for downward risk (stock values falling), which makes it more accurate than the Sharpe Ratio at times. The Compounded Annual Growth Rate is the projected average annual growth rate required to progress from the starting value to the ending value. Finally, Max Drawdown is the greatest peak-to-trough change in a stock's value. Sharpe/Sortino are expressed as decimals and annualized by multiplying by √252 where 252 is the number of days in a year when trades can be made. The square root is needed because variance scales linearly with time and standard deviation is the square root of variance, so standard deviation changes with the square root of time, while CAGR and Max Drawdown are expressed as percentages.
 
 **User Input**
 The user decides the ticker and the time period through string input statements. These input statements then connect to yfinance (library from Yahoo) and pull the information to track the stock's performance over the selected interval.
@@ -29,10 +29,17 @@ Start Date: 2020-10-13
 End Date: 2025-10-13
 
 **Outputs**
+![Example Chart](example_output.png)
 Sharpe Ratio: 0.55
 Sortino Ratio: 0.82
 Max Drawdown: -33.36%
 CAGR: 15.87%
+
+**Limitations**
+I averaged the risk-free rate throughout the inputted interval rather than pairing the daily risk-free rate with the daily percent change, so the Sharpe/Sortino ratios could vary slightly.
+I used the standard deviation of all negative returns (<0) rather than measuring below a set target.
+Years are approximated as days/trading days rather than calculated with calendar dates.
+This program only analyzes one ticker rather than a multi-asset portfolio, so if the user wants to analyze another ticker, they have to re-run the program.
 
 
 
