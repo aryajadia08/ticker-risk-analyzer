@@ -30,6 +30,7 @@ End Date: 2025-10-13
 
 **Outputs**
 ![Example Chart](example_output.png)
+
 Sharpe Ratio: 0.55
 Sortino Ratio: 0.82
 Max Drawdown: -33.36%
