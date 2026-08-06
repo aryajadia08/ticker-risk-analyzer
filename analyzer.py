@@ -8,7 +8,7 @@ def data_pull():
   ticker = input("What ticker would you like to see?: ")
   #start_date = input("What is your desired start date (YYYY-MM-DD)?: ")
   #end_date = input("What is your desired end date (YYYY-MM-DD)?: ")
-  data = yf.download(ticker, start=starting, end=ending)
+  data = yf.download(ticker, start=starting, end=ending, progress = False, auto_adjust = True)
   close = data["Close"].squeeze()
   start_price = close.iloc[0]
   end_price = close.iloc[-1] 
@@ -23,7 +23,7 @@ def data_pull():
   max_drawdown = drawdown.min()*100
   downwards_returns = data_returns[data_returns<0]  
   data_downwards_sd = np.std(downwards_returns)
-  data_riskfree = yf.download("^IRX", start=starting, end=ending)
+  data_riskfree = yf.download("^IRX", start=starting, end=ending, progress = False, auto_adjust = True)
   closing = data_riskfree["Close"].squeeze()
   data_riskfree_mean = (np.mean(closing)/100)/252
   sharpe_ratio = ((data_mean - data_riskfree_mean)/data_sd)*np.sqrt(252)
