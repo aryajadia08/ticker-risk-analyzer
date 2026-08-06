@@ -1,6 +1,7 @@
 import yfinance as yf
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt 
 
 def data_pull():
   starting = "2020-10-13"
@@ -26,6 +27,11 @@ def data_pull():
   data_riskfree = yf.download("^IRX", start=starting, end=ending, progress = False, auto_adjust = True)
   closing = data_riskfree["Close"].squeeze()
   data_riskfree_mean = (np.mean(closing)/100)/252
+  close.plot()
+  plt.title(ticker+" Closing Price ("+starting[:4]+"-"+ending[:4]+")")
+  plt.ylabel("Stock Value (USD)")
+  plt.xlabel("Dates")
+  plt.show()
   sharpe_ratio = ((data_mean - data_riskfree_mean)/data_sd)*np.sqrt(252)
   sortino_ratio = ((data_mean - data_riskfree_mean)/data_downwards_sd)*np.sqrt(252)
   cagr = (((growth_rate**(1/years))-1)*100)
