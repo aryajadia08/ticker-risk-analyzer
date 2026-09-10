@@ -12,16 +12,15 @@ def data_pull():
   start_price = close.iloc[0]
   end_price = close.iloc[-1] 
   growth_rate = end_price/start_price
-  day_number = len(close)
-  years = day_number/252
+  years = (close.index[-1] - close.index[0]).days / 365.25
   data_returns = close.pct_change()
   data_mean = np.mean(data_returns)
   data_sd = np.std(data_returns)
   running_peak = close.cummax()
   drawdown = (close/running_peak)-1
   max_drawdown = drawdown.min()*100
-  downwards_returns = data_returns[data_returns<0]  
-  data_downwards_sd = np.std(downwards_returns)
+  downside = np.minimum(data_returns.dropna(), 0)
+  data_downwards_sd = np.sqrt(np.mean(downside**2))
   data_riskfree = yf.download("^IRX", start=start_date, end=end_date, progress = False, auto_adjust = True)
   closing = data_riskfree["Close"].squeeze()
   data_riskfree_mean = (np.mean(closing)/100)/252
