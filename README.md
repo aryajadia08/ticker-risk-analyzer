@@ -30,6 +30,7 @@ End Date: 2026-02-01
 (The start date is 2019-12-31 instead of 2020-01-01 like on PV because PV uses 12-31-2019's close as the initial balance for January 2020. yfinance excludes the end date, so 2026-02-01 returns data up until the final close of January 2026 (matching PV's end date)).
 
 **Outputs**
+
 ![Example Chart](example_output1.png)
 
 Sharpe Ratio: 1.3
