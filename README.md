@@ -12,10 +12,10 @@ The user decides the ticker and the time period through string input statements.
 To calculate the Sharpe Ratio, I first isolated the closing values from the dataset with data["Close"].squeeze() (squeeze converts the remaining column into a series). I then used pandas to find the daily percent change  and then found the mean and standard deviation of percent change through numpy. I then used the ticker ^IRX to calculate the risk-free rate and computed the mean risk-free rate by dividing by 100 to convert to a decimal. I then divided it by 252 (number of trading days) to make it a daily rate rather than yearly. Finally, I plugged each parameter into the formula (the difference between the portfolio return and risk free rate divided by the standard deviation) to generate a consistent method of generating the Sharpe Ratio.
 
 **Sortino Ratio**
-For the Sortino Ratio, I used the same mean risk-free rate and mean daily return as the Sharpe Ratio, but I adjusted the standard deviation to only include percent changes below zero (since Sortino only accounts for downward risk while Sharpe accounts for total risk). Other than changing the standard deviation, the process of calculating the Sortino Ratio was similar to calculating the Sharpe Ratio.  
+For the Sortino Ratio, I used the same mean risk-free rate and mean daily return as the Sharpe Ratio, but I set every positive daily return to zero and kept all negative returns (setting positive returns to zero makes it so they don't contribute to the sum, but includes them in the denominator to track the frequency of negative days). After that, I squared all the returns, found the mean, and found the square root so the rate becomes percent per day rather than percent squared. Other than changing the standard deviation to only calculate the downside deviation, the process of calculating the Sortino Ratio was similar to calculating the Sharpe Ratio.  
 
 **Compound Annual Growth Rate**
-For calculating the CAGR, I first had to calculate the growth rate by dividing the ending closing value by the starting closing value (found them through indexing with [0] and [-1]). I then used len(close) to count how many entries were in the dataset (number of days), and then divided the days by 252 (number of trading days) to approximate the length of the interval in years. Finally, I set CAGR equal to the growth rate raised to the power of 1/years minus 1 to find the CAGR.
+For calculating the CAGR, I first had to calculate the growth rate by dividing the ending closing value by the starting closing value (found them through indexing with [0] and [-1]). Then, I initially used len(close) to count how many entries were in the dataset (number of days), and then divided the days by 252 (number of trading days) to approximate the length of the interval in years, but I pivoted to finding the amount of actual time between the two dates, converting them to days through .days and divided by 365.25 to get the true interval length. I did this because my prior approximation divided by an average rather than measuring the actual calendar time. Finally, I set CAGR equal to the growth rate raised to the power of 1/years minus 1 to find the CAGR.
 
 **Max Drawdown**
 Max Drawdown was by far the most complex metric to calculate. I used cummax() to find the "running-peak" of the data set (the highest value as you move through the dataset start to finish). I then created a drawdown = (close/running_peak)-1 statement, which evaluates all the declines from the cumulative peaks. Finally, I used .min() to find the greatest negative value and deemed it the Max Drawdown.
@@ -24,30 +24,31 @@ Max Drawdown was by far the most complex metric to calculate. I used cummax() to
 For the chart, I imported matplotlib since it interacts well with pandas (there was no need for me to define x and y labels since my close variable is a pandas series with an index (closing values and dates), so the dates became the x value and the closing values became the y value). I then created an automatic title that reflects the interval and the ticker selected by the user. Finally, I added labels and cleaned up the graph with some small editing.
 
 **Example Inputs**
-Ticker: AAPL
-Start Date: 2020-10-13
-End Date: 2025-10-13
+Ticker: NVDA
+Start Date: 2019-12-31
+End Date: 2026-02-01
+(The start date is 2019-12-31 instead of 2020-01-01 like on PV because PV uses 12-31-2019's close as the initial balance for January 2020. yfinance excludes the end date, so 2026-02-01 returns data up until the final close of January 2026 (matching PV's end date)).
 
 **Outputs**
 ![Example Chart](example_output.png)
 
-Sharpe Ratio: 0.55
-Sortino Ratio: 0.82
-Max Drawdown: -33.36%                    
-CAGR: 15.87%
+Sharpe Ratio: 1.3
+Sortino Ratio: 2.0
+Max Drawdown: -66.34%                    
+CAGR: 77.35%
 
-**Metrics from Portfolio Visualizer for Comparison (Oct 2020 - Oct 2025)**
-Sharpe Ratio: 0.69
-Sortino Ratio: 1.19
-Max Drawdown: -26.40%                    
-CAGR: 18.79%
-(The discrepancy between my results and the results from Portfolio Visualizer can be explained by PV's calculation process differing from mine. PV calculates based on monthly returns, while my program utilizes daily returns, so my results would display more volatility, which would affect the Sharpe/Sortino Ratios. The same daily-to-monthly difference creates the ~7% difference in max drawdown because the timeframe used in my program captures low points within the month that PV doesn't include. Additionally, the timeframe in my program was 2020-10-13 to 2025-10-13 while PV's timeframe was October 2020 to October 2025, so PV includes 26 days that aren't presented in my original timeframe).
+**Metrics from Portfolio Visualizer for Comparison (Jan 2020 - Jan 2026)**
+Sharpe Ratio: 1.4
+Sortino Ratio: 2.78
+Max Drawdown: -62.82%                    
+CAGR: 77.35%
+
+I originally assumed the discrepancy between my script and PV was due to the difference in return frequency (PV uses monthly returns while my script calculates metrics with daily returns), but this theory was only true for one metric. I initially had a gap in CAGR because of how I calculated year count, but my new methodology fixed that gap. The gap in Max Drawdown comes from the difference in frequencies between my script and PV because PV doesn't account for bottoms within a month (only month-end values) while my script does, making my drawdown more accurate. For Sharpe and Sortino, I couldn't attribute a reason to the discrepancy, but my assumption is that it relates in some way to the different frequency and multipliers used for annualization between PV and my script, but I need to investigate further by calculating with monthly returns rather than daily. I also changed how I calculated the Sortino ratio, but that barely changed the result on NVDA.
 
 **Limitations**
 I averaged the risk-free rate throughout the inputted interval rather than pairing the daily risk-free rate with the daily percent change, so the Sharpe/Sortino ratios could vary slightly.
-I used the standard deviation of all negative returns (<0) rather than measuring below a set target.
-Years are approximated as days/trading days rather than calculated with calendar dates.
 This program only analyzes one ticker rather than a multi-asset portfolio, so if the user wants to analyze another ticker, they have to re-run the program.
-
+Sortino considers any positive return as a success, so the targeted benchmark is 0% rather than the risk-free rate from treasury bills.
+Sharpe/Sortino have not been calculated at a monthly frequency to truly compare with PV's metrics
 
 
